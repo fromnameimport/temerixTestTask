@@ -44,7 +44,7 @@ public class HomePage extends TestBase {
     public HomePage focusOnCategory(String categoryName) {
         switch (categoryName) {
             case "dacha-sad-remont" -> getCategories().get(8).hover();
-            case "test" -> getCategories().get(7).hover();
+            case "" -> getCategories().get(7).hover(); // Place to add more categories if needed
         }
         return this;
     }

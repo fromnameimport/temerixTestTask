@@ -4,7 +4,6 @@ import base.TestBase;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 public class ProductPage extends TestBase {
     private final SelenideElement itemCurrentPrice = $("div.product-info-block > div > div.center-part > div.price-block > div.regular-price");

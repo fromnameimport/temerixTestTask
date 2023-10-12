@@ -2,6 +2,7 @@ package pages;
 
 import base.TestBase;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
@@ -12,13 +13,15 @@ public class ProductListPage extends TestBase {
 
     // variables
     private final SelenideElement loadMore30ItemsButton = $(By.className("pagination-block-load-more"));
-    private final ElementsCollection itemNames = $$(By.xpath("//a[@class=\"name-block\"]"));
+    private final SelenideElement nextPaginationItem = $("a.pagination-item.next");
+    private final SelenideElement actionSticker = $("span.sticker.stock");
+    private final ElementsCollection productNames = $$(By.xpath("//a[@class=\"name-block\"]"));
     private final ElementsCollection regularPrices = $$("div.center-part> div > div.regular-price");
-
     private final ElementsCollection paginationItems = $$("div.pagination > a");
 
 
     // getters
+
     public float getNthItemRegularPrice(int itemNum) {
         return Float.parseFloat(regularPrices.get(itemNum - 1).getText().replaceAll("[^0-9.]", ""));
     }
@@ -32,30 +35,64 @@ public class ProductListPage extends TestBase {
     }
 
     public int getItemsQty() {
-        return itemNames.size();
+        return productNames.size();
+    }
+
+    public SelenideElement getActionSticker() {
+        return actionSticker;
     }
 
     public SelenideElement getNthPaginationItem(int paginationItemNum) {
         return paginationItems.get(paginationItemNum);
     }
+    public SelenideElement getNextPaginationItem() { return nextPaginationItem; }
 
     public SelenideElement getLoadMore30ItemsButton() {
         return loadMore30ItemsButton;
     }
+
+    public ElementsCollection getItemNames() {
+        return productNames;
+    }
+
+    public String getNthItemName(int nth) {return getItemNames().get(nth - 1).getText(); }
+
 
     // navigation
     public ProductListPage clickNthPaginationItem(int paginationItemNum) {
         getNthPaginationItem(paginationItemNum).click();
         return this;
     }
+    public ProductListPage clickNextPaginationItem() {
+        getNextPaginationItem().click();
+        return this;
+    }
 
-    public ProductListPage clickLoad30MoreItems() {
+    public ProductListPage clickLoad30MoreItemsButton() {
         getLoadMore30ItemsButton().click();
+        return this;
+    }
+
+    public ProductListPage clickLoad30MoreItemsButtonNthTimes(int nth) {
+        for (int i = 1; i < nth; i++) {
+            getLoadMore30ItemsButton().click();
+            Selenide.sleep(1000);
+        }
         return this;
     }
 
     public void clickNthItemName(int itemNUm) {
         SelenideElement item = $("div.products-listing.list > div:nth-child("+itemNUm+") > div.image-block > a");
         item.click();
+    }
+
+    // assertions
+    public boolean isActionStickerPresentOnThePage() {
+        return getActionSticker().isDisplayed();
+    }
+
+    public boolean isNthProductHasPbBankSticker(int nth) {
+        SelenideElement pbSticker = $("div.products-listing.list > div:nth-child(" + nth + ") > div.content-block > div.center-part > div.bank-stickers > div.bank-sticker.pb");
+        return pbSticker.exists();
     }
 }
