@@ -11,23 +11,28 @@ import static com.codeborne.selenide.Selenide.$$;
 public class ProductListPage extends TestBase {
 
     // variables
-//    private SelenideElement loadMore30ItemsButton = $("div.pagination-block-load-more");
-    private SelenideElement loadMore30ItemsButton = $(By.className("pagination-block-load-more"));
+    private final SelenideElement loadMore30ItemsButton = $(By.className("pagination-block-load-more"));
+    private final ElementsCollection itemNames = $$(By.xpath("//a[@class=\"name-block\"]"));
     private final ElementsCollection regularPrices = $$("div.center-part> div > div.regular-price");
-//    private final ElementsCollection oldPrices = $$("div.old-price");
-//    private final ElementsCollection oldPrices = $$(By.className("old-price"));
-    // nth child?
 
-    private ElementsCollection paginationItems = $$("div.pagination > a");
+    private final ElementsCollection paginationItems = $$("div.pagination > a");
+
 
     // getters
-    public int getNthItemRegularPrice(int itemNum) {
-        return Integer.parseInt(regularPrices.get(itemNum).getText().replaceAll(" ", ""));
+    public float getNthItemRegularPrice(int itemNum) {
+        return Float.parseFloat(regularPrices.get(itemNum - 1).getText().replaceAll("[^0-9.]", ""));
     }
 
-    public int getNthItemOldPrice(int itemNum) {
-        String selector = "div.products-listing.list > div:nth-child("+itemNum+") > div.content-block > div.center-part > div.price-block > div.old-price";
-        return Integer.parseInt($(selector).getText().replaceAll(" ", ""));
+    public float getNthItemOldPrice(int itemNum) {
+        SelenideElement itemOldPrice = $("div.products-listing.list > div:nth-child("+itemNum+") > div.content-block > div.center-part > div.price-block > div.old-price");
+        if (!itemOldPrice.exists()) {
+            return 0;
+        }
+        return Float.parseFloat(itemOldPrice.getText().replaceAll("[^0-9.]", ""));
+    }
+
+    public int getItemsQty() {
+        return itemNames.size();
     }
 
     public SelenideElement getNthPaginationItem(int paginationItemNum) {
@@ -49,4 +54,8 @@ public class ProductListPage extends TestBase {
         return this;
     }
 
+    public void clickNthItemName(int itemNUm) {
+        SelenideElement item = $("div.products-listing.list > div:nth-child("+itemNUm+") > div.image-block > a");
+        item.click();
+    }
 }
