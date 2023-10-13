@@ -17,13 +17,17 @@ public class ProductListPage extends TestBase {
     private final SelenideElement actionSticker = $("span.sticker.stock");
     private final ElementsCollection productNames = $$(By.xpath("//a[@class=\"name-block\"]"));
     private final ElementsCollection regularPrices = $$("div.center-part> div > div.regular-price");
+    private final ElementsCollection oldPrices = $$("div.center-part> div > div.old-price");
     private final ElementsCollection paginationItems = $$("div.pagination > a");
 
 
     // getters
-
     public float getNthItemRegularPrice(int itemNum) {
         return Float.parseFloat(regularPrices.get(itemNum - 1).getText().replaceAll("[^0-9.]", ""));
+    }
+
+    public float getNthItemRegularPriceByOldPriceElement(SelenideElement element) {
+        return Float.parseFloat(element.ancestor("..price-block").find(By.className("regular-price")).getText().replaceAll("[^0-9.]", ""));
     }
 
     public float getNthItemOldPrice(int itemNum) {
@@ -32,6 +36,19 @@ public class ProductListPage extends TestBase {
             return 0;
         }
         return Float.parseFloat(itemOldPrice.getText().replaceAll("[^0-9.]", ""));
+    }
+
+    public SelenideElement getNthItemWithOldPrice(int itemNum) {
+        return oldPrices.get(itemNum - 1);
+    }
+
+    public SelenideElement getNthItemOldPriceElement(int itemNum) {
+        SelenideElement item = $("div.products-listing.list > div:nth-child(" + itemNum + ") > div.content-block > div.center-part > div.price-block > div.old-price");
+        return item;
+    }
+
+    public int getItemsWithDiscountQty() {
+        return oldPrices.size();
     }
 
     public int getItemsQty() {
@@ -85,6 +102,7 @@ public class ProductListPage extends TestBase {
         SelenideElement item = $("div.products-listing.list > div:nth-child("+itemNUm+") > div.image-block > a");
         item.click();
     }
+
 
     // assertions
     public boolean isActionStickerPresentOnThePage() {

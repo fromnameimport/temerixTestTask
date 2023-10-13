@@ -4,6 +4,7 @@ import base.TestBase;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -13,6 +14,7 @@ import pages.ProductPage;
 import pages.ProductListPage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Random;
 
@@ -79,8 +81,7 @@ public class Tests extends TestBase {
         while (!isActionTickerPresent) {
             if (productListPage.isActionStickerPresentOnThePage()) {
                 isActionTickerPresent = true;
-            }
-            productListPage.clickLoad30MoreItemsButton();
+            } else productListPage.clickNextPaginationItem();
         }
         Assert.assertTrue(productListPage.isActionStickerPresentOnThePage());
     }
@@ -106,6 +107,7 @@ public class Tests extends TestBase {
         LinkedHashSet<String> productNames = new LinkedHashSet<>();
         LinkedHashSet<Float> regularPrices = new LinkedHashSet<>();
         LinkedHashSet<Float> oldPrices = new LinkedHashSet<>();
+        Random random = new Random();
         int i = 0;
 
         homePage
@@ -113,8 +115,13 @@ public class Tests extends TestBase {
                 .focusOnCategory("dacha-sad-remont")
                 .clickOnSubcategory("Screwdrivers");
 
-        while (i <= 10) {
+        while (i < 10) {
+            int temp = 1;
+            int discountItemsQty = productListPage.getItemsWithDiscountQty();
+            int randomDiscountItemNumber = random.nextInt(1, discountItemsQty);
+
             for (int j = 0; j <= productListPage.getItemsQty(); j++) {
+
                 if (productListPage.getNthItemOldPrice(j) != 0) {
                     productNames.add(productListPage.getNthItemName(j));
                     regularPrices.add(productListPage.getNthItemRegularPrice(j));
@@ -122,16 +129,21 @@ public class Tests extends TestBase {
                     i++;
                 }
             }
+            productListPage.clickNextPaginationItem();
         }
-        System.out.println(productNames);
-        System.out.println(regularPrices);
-        System.out.println(oldPrices);
+
+        String[] names = new String[productNames.size()];
+        names = productNames.toArray(names);
+        Float[] actualPrices = new Float[regularPrices.size()];
+        actualPrices = regularPrices.toArray(actualPrices);
+        Float[] old = new Float[oldPrices.size()];
+        old = oldPrices.toArray(old);
 
 
 
-//        int currentPrice = 5998;
-//        int oldPrice = 6372;
-//        float formula = 100 - (float) (currentPrice * 100) / oldPrice;
-//        System.out.println(formula);
+        for (int j = 0; j < names.length; j++) {
+            float discount = (float) (100.0 - (actualPrices[j] * 100.0) / old[j]);
+            System.out.println("Name: " + names[j] + "; Actual price: " + actualPrices[j] + "; Old price: " + old[j] + "; Discount: " + discount);
+        }
     }
 }
