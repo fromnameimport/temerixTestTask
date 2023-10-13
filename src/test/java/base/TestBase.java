@@ -9,7 +9,6 @@ import java.util.Objects;
 import static com.codeborne.selenide.Selenide.$;
 
 public class TestBase {
-
     public void openHomePage() {
         Selenide.open(Configuration.baseUrl);
     }
@@ -18,9 +17,5 @@ public class TestBase {
         return Objects.requireNonNull(
                 $("div.language-list > a[data-lang=\"uk\"]").getAttribute("class")
         ).contains("active");
-    }
-
-    public void returnToTheHomePage() {
-        $("a.middle-logo").click();
     }
 }

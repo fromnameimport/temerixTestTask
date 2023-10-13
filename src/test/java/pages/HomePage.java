@@ -27,7 +27,6 @@ public class HomePage extends TestBase {
 
     public HashMap<String, String> getPowerToolSubcategoriesLinks() {
         HashMap<String, String> powerToolSubcategoriesLinks = new HashMap<>();
-//        powerToolSubcategoriesLinks.put("Drills", "/uk/dreli-i-miksery/");
         powerToolSubcategoriesLinks.put("Drills", "/dreli-i-miksery/");
         powerToolSubcategoriesLinks.put("Perforators", "/perforatory/");
         powerToolSubcategoriesLinks.put("Grinders", "/shlifovalnye-mashiny-bolgarki/");

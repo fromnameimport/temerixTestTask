@@ -26,25 +26,12 @@ public class ProductListPage extends TestBase {
         return Float.parseFloat(regularPrices.get(itemNum - 1).getText().replaceAll("[^0-9.]", ""));
     }
 
-    public float getNthItemRegularPriceByOldPriceElement(SelenideElement element) {
-        return Float.parseFloat(element.ancestor("..price-block").find(By.className("regular-price")).getText().replaceAll("[^0-9.]", ""));
-    }
-
     public float getNthItemOldPrice(int itemNum) {
         SelenideElement itemOldPrice = $("div.products-listing.list > div:nth-child("+itemNum+") > div.content-block > div.center-part > div.price-block > div.old-price");
         if (!itemOldPrice.exists()) {
-            return 0;
+            return 0.0F;
         }
         return Float.parseFloat(itemOldPrice.getText().replaceAll("[^0-9.]", ""));
-    }
-
-    public SelenideElement getNthItemWithOldPrice(int itemNum) {
-        return oldPrices.get(itemNum - 1);
-    }
-
-    public SelenideElement getNthItemOldPriceElement(int itemNum) {
-        SelenideElement item = $("div.products-listing.list > div:nth-child(" + itemNum + ") > div.content-block > div.center-part > div.price-block > div.old-price");
-        return item;
     }
 
     public int getItemsWithDiscountQty() {
@@ -76,26 +63,19 @@ public class ProductListPage extends TestBase {
 
 
     // navigation
-    public ProductListPage clickNthPaginationItem(int paginationItemNum) {
-        getNthPaginationItem(paginationItemNum).click();
-        return this;
-    }
-    public ProductListPage clickNextPaginationItem() {
+    public void clickNextPaginationItem() {
         getNextPaginationItem().click();
-        return this;
     }
 
-    public ProductListPage clickLoad30MoreItemsButton() {
+    public void clickLoad30MoreItemsButton() {
         getLoadMore30ItemsButton().click();
-        return this;
     }
 
-    public ProductListPage clickLoad30MoreItemsButtonNthTimes(int nth) {
+    public void clickLoad30MoreItemsButtonNthTimes(int nth) {
         for (int i = 1; i < nth; i++) {
             getLoadMore30ItemsButton().click();
             Selenide.sleep(1000);
         }
-        return this;
     }
 
     public void clickNthItemName(int itemNUm) {

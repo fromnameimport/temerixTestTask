@@ -1,10 +1,7 @@
 package tests;
 
 import base.TestBase;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -14,11 +11,7 @@ import pages.ProductPage;
 import pages.ProductListPage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Random;
-
-import static com.codeborne.selenide.Selenide.$$;
 
 public class Tests extends TestBase {
     HomePage homePage = new HomePage();
@@ -79,11 +72,13 @@ public class Tests extends TestBase {
                 .clickOnSubcategory("Perforators");
 
         while (!isActionTickerPresent) {
+
             if (productListPage.isActionStickerPresentOnThePage()) {
                 isActionTickerPresent = true;
             } else productListPage.clickNextPaginationItem();
         }
-        Assert.assertTrue(productListPage.isActionStickerPresentOnThePage());
+
+        Assert.assertTrue(productListPage.isActionStickerPresentOnThePage(), "Action sticker is present on the page");
     }
 
     @Test
@@ -104,46 +99,48 @@ public class Tests extends TestBase {
 
     @Test
     public void test4() {
-        LinkedHashSet<String> productNames = new LinkedHashSet<>();
-        LinkedHashSet<Float> regularPrices = new LinkedHashSet<>();
-        LinkedHashSet<Float> oldPrices = new LinkedHashSet<>();
+        SoftAssert softAssert = new SoftAssert();
+        ArrayList<String> productNames = new ArrayList<>();
+        ArrayList<Float> actualPrices = new ArrayList<>();
+        ArrayList<Float> oldPrices = new ArrayList<>();
         Random random = new Random();
-        int i = 0;
+
+        int indicatorOfTheAddedItems = 1;
 
         homePage
                 .openCatalogMenu()
                 .focusOnCategory("dacha-sad-remont")
                 .clickOnSubcategory("Screwdrivers");
 
-        while (i < 10) {
-            int temp = 1;
+        while (indicatorOfTheAddedItems <= 10) {
             int discountItemsQty = productListPage.getItemsWithDiscountQty();
-            int randomDiscountItemNumber = random.nextInt(1, discountItemsQty);
+            int randomDiscountItemsQtyToAddOnCurrentPage = 0;
 
-            for (int j = 0; j <= productListPage.getItemsQty(); j++) {
+            if (discountItemsQty != 0) {
+                randomDiscountItemsQtyToAddOnCurrentPage = random.nextInt(1, discountItemsQty);
+            }
 
-                if (productListPage.getNthItemOldPrice(j) != 0) {
+            for (int j = 0; j < productListPage.getItemsQty(); j++) {
+                if (productListPage.getNthItemOldPrice(j) != 0.0F && randomDiscountItemsQtyToAddOnCurrentPage != 0) {
                     productNames.add(productListPage.getNthItemName(j));
-                    regularPrices.add(productListPage.getNthItemRegularPrice(j));
+                    actualPrices.add(productListPage.getNthItemRegularPrice(j));
                     oldPrices.add(productListPage.getNthItemOldPrice(j));
-                    i++;
+                    randomDiscountItemsQtyToAddOnCurrentPage--;
+                    indicatorOfTheAddedItems++;
                 }
             }
             productListPage.clickNextPaginationItem();
         }
 
-        String[] names = new String[productNames.size()];
-        names = productNames.toArray(names);
-        Float[] actualPrices = new Float[regularPrices.size()];
-        actualPrices = regularPrices.toArray(actualPrices);
-        Float[] old = new Float[oldPrices.size()];
-        old = oldPrices.toArray(old);
+        for (int j = 0; j < productNames.size(); j++) {
+            Float oldPrice = oldPrices.get(j);
+            Float actualPrice = actualPrices.get(j);
 
+            float discount = (float) (100.0 - (actualPrice * 100.0) / oldPrice);
+            float expectedPrice = oldPrice - (oldPrice / 100 * discount);
 
-
-        for (int j = 0; j < names.length; j++) {
-            float discount = (float) (100.0 - (actualPrices[j] * 100.0) / old[j]);
-            System.out.println("Name: " + names[j] + "; Actual price: " + actualPrices[j] + "; Old price: " + old[j] + "; Discount: " + discount);
+            softAssert.assertEquals(actualPrice, expectedPrice, productNames.get(j) + ": ");
         }
+        softAssert.assertAll();
     }
 }
